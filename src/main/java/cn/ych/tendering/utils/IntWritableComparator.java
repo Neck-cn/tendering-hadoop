@@ -5,7 +5,7 @@ import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.io.WritableComparator;
 
 /**
- * TODO 	 IntWritable类的倒叙排序
+ * IntWritable类的倒叙排序
  * @author   administrator
  * @Date	 2019年10月7日
  */

@@ -52,7 +52,7 @@ public class Init {
         List<Tendering> tenderingList = new TenderingDao().selectAllTendering();
         for (Tendering tendering : tenderingList) {
             //e_id,e_name,end_time,win_id
-            fileWriter.append(String.valueOf(tendering.getE_id())).append(',').append(tendering.getName())
+            fileWriter.append(String.valueOf(tendering.getE_id())).append('\t').append(tendering.getName())
                     .append(',').append(tendering.getEnd_time()).append(',').append(String.valueOf(tendering.getWin_id())).append('\n');
         }
         fileWriter.flush();

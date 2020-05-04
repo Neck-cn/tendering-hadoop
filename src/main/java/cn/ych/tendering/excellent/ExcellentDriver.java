@@ -1,5 +1,9 @@
 package cn.ych.tendering.excellent;
 
+import cn.ych.tendering.excellent.bid.FirstExcellentBidMapper;
+import cn.ych.tendering.excellent.bid.FirstExcellentBidReducer;
+import cn.ych.tendering.excellent.bid.SecondExcellentBidMapper;
+import cn.ych.tendering.excellent.bid.SecondExcellentBidReducer;
 import cn.ych.tendering.utils.IntWritableComparator;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -11,8 +15,6 @@ import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
 
 
 public class ExcellentDriver {
