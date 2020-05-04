@@ -6,12 +6,15 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class ExcellentTenderingReducer extends Reducer<IntWritable, Text, IntWritable, Text> {
 
     Text v = new Text();
     long currentTime = System.currentTimeMillis();
     ExcellentTenderingDao excellentTenderingDao;
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public ExcellentTenderingReducer() {
         excellentTenderingDao = new ExcellentTenderingDao();
@@ -28,9 +31,15 @@ public class ExcellentTenderingReducer extends Reducer<IntWritable, Text, IntWri
         for (Text value : values) {
             String[] split = value.toString().split(",");
             e_name = split[0];
+            long endTime = 0;
+            try {
+                endTime = sdf.parse(split[1]).getTime();
+            } catch (ParseException e) {
+                throw new RuntimeException("时间格式错误");
+            }
             if (Integer.parseInt(split[2]) != 0) {
                 win++;
-            } else if (System.currentTimeMillis() > currentTime) {
+            } else if (currentTime > endTime) {
                 fail++;
             }
             sum++;

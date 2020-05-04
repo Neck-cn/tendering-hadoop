@@ -4,6 +4,8 @@ import cn.ych.tendering.excellent.bid.FirstExcellentBidMapper;
 import cn.ych.tendering.excellent.bid.FirstExcellentBidReducer;
 import cn.ych.tendering.excellent.bid.SecondExcellentBidMapper;
 import cn.ych.tendering.excellent.bid.SecondExcellentBidReducer;
+import cn.ych.tendering.excellent.tendering.ExcellentTenderingMapper;
+import cn.ych.tendering.excellent.tendering.ExcellentTenderingReducer;
 import cn.ych.tendering.utils.IntWritableComparator;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -14,12 +16,10 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-import java.io.IOException;
-
 
 public class ExcellentDriver {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
 
 //        new Timer("testTimer1").schedule(new TimerTask() {
 //            @Override
@@ -31,6 +31,9 @@ public class ExcellentDriver {
 //                }
 //            }
 //        }, 0, 24 * 60 * 60 * 1000);
+        ExcellentDriver excellentDriver = new ExcellentDriver();
+        excellentDriver.startBid();
+        excellentDriver.startTendering();
     }
 
     public void startBid() throws Exception {
@@ -40,8 +43,8 @@ public class ExcellentDriver {
         conf.set("mapred.textoutputformat.ignoreseparator", "true");
         conf.set("mapred.textoutputformat.separator", ",");
 
-        FileSystem fs=FileSystem.get(conf);
-        fs.copyFromLocalFile(new Path(Init.bidFileName),new Path(Init.bidFileName));
+        FileSystem fs = FileSystem.get(conf);
+        fs.copyFromLocalFile(new Path(Init.bidFileName), new Path(Init.bidFileName));
         // 1 获取Job对象
         Job job = Job.getInstance(conf);
 
@@ -63,7 +66,7 @@ public class ExcellentDriver {
         // 6 设置输入路径和输出路径
         FileInputFormat.setInputPaths(job, new Path(Init.bidFileName));
 
-        String output = "tempOutput" + System.currentTimeMillis();
+        String output = "tempOutput-bid-" + System.currentTimeMillis();
         FileOutputFormat.setOutputPath(job, new Path(output));
 
         // 7 提交job
@@ -92,7 +95,7 @@ public class ExcellentDriver {
         // 6 设置输入路径和输出路径
         FileInputFormat.setInputPaths(job1, new Path(output + "/part-r-00000"));
 
-        FileOutputFormat.setOutputPath(job1, new Path("output" + System.currentTimeMillis()));
+        FileOutputFormat.setOutputPath(job1, new Path("output-bid-" + System.currentTimeMillis()));
 
         // 7 提交job
         job1.waitForCompletion(true);
@@ -106,8 +109,8 @@ public class ExcellentDriver {
         conf.set("mapred.textoutputformat.ignoreseparator", "true");
         conf.set("mapred.textoutputformat.separator", ",");
 
-        FileSystem fs=FileSystem.get(conf);
-        fs.copyFromLocalFile(new Path(Init.bidFileName),new Path(Init.tenderingFileName));
+        FileSystem fs = FileSystem.get(conf);
+        fs.copyFromLocalFile(new Path(Init.bidFileName), new Path(Init.tenderingFileName));
         // 1 获取Job对象
         Job job = Job.getInstance(conf);
 
@@ -115,21 +118,21 @@ public class ExcellentDriver {
         job.setJarByClass(ExcellentDriver.class);
 
         // 3 关联Map和Reduce类
-        job.setMapperClass(FirstExcellentBidMapper.class);
-        job.setReducerClass(FirstExcellentBidReducer.class);
+        job.setMapperClass(ExcellentTenderingMapper.class);
+        job.setReducerClass(ExcellentTenderingReducer.class);
 
         // 4 设置Mapper阶段输出数据的key和value类型
-        job.setMapOutputKeyClass(Text.class);
-        job.setMapOutputValueClass(IntWritable.class);
+        job.setMapOutputKeyClass(IntWritable.class);
+        job.setMapOutputValueClass(Text.class);
 
         // 5 设置最终数据输出的key和value类型
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
+        job.setOutputKeyClass(IntWritable.class);
+        job.setOutputValueClass(Text.class);
 
         // 6 设置输入路径和输出路径
-        FileInputFormat.setInputPaths(job, new Path(Init.bidFileName));
+        FileInputFormat.setInputPaths(job, new Path(Init.tenderingFileName));
 
-        String output = "tempOutput" + System.currentTimeMillis();
+        String output = "output-tendering-" + System.currentTimeMillis();
         FileOutputFormat.setOutputPath(job, new Path(output));
 
         // 7 提交job
